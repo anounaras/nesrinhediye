@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <!-- max-scale ve user-scalable ekleyerek mobilde yakınlaştırmayı engelledik -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Beni Affeder Misin?</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffe4e1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; 
+        }
+
+        h1 {
+            color: #d81b60;
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        #yesBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #yesBtn:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
+        }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            position: relative; 
+            touch-action: none; /* MOBİL EKLENTİSİ: Dokunurken ekranın kaymasını engeller */
+        }
+
+        /* YAZININ KUTUSU */
+        #message {
+            display: none;
+            color: #d81b60;
+            font-size: 4rem; /* Yazıyı biraz daha büyüttüm */
+            font-weight: bold;
+            text-align: center;
+            position: relative; /* Resmin bu yazıya göre hizalanmasını sağlar */
+            animation: fadeIn 1s forwards;
+            line-height: 1.2;
+        }
+
+        /* ÇAPRAZ EKLENEN RESİM */
+        #cuteImg {
+            position: absolute;
+            top: -120px; /* Yazının ne kadar üstüne çıkacağı */
+            left: -90px; /* Sol tarafa ne kadar taşacağı */
+            width: 160px; /* Resmin boyutu */
+            transform: rotate(-15deg); /* Resmi sola doğru hafif çapraz (eğik) yapar */
+            z-index: 5;
+            pointer-events: none; /* Yanlışlıkla resme tıklanmasını engeller */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #link {
+            text-decoration: none;
+            color: greenyellow;
+            text-shadow: none;
+            font-size: 30px;
+        }
+
+        /* MOBİL UYUM (RESPONSIVE) EKLENTİSİ */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem; /* Başlığı mobilde küçülttük */
+            }
+            
+            button {
+                padding: 12px 30px;
+                font-size: 1.2rem; /* Butonları küçülttük */
+            }
+
+            #message {
+                font-size: 2.5rem; /* Mesaj metnini küçülttük */
+            }
+
+            #cuteImg {
+                width: 110px;      /* Resmi mobilde küçülttük */
+                top: -80px;        /* Konumunu yeni boyuta göre ayarladık */
+                left: -40px;
+            }
+
+            #link {
+                font-size: 22px;   /* Link metnini mobilde küçülttük */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="question">Beni Affeder Misin?</h1>
+    
+    <div class="buttons" id="btnContainer">
+        <button id="yesBtn">EVET</button>
+        <button id="noBtn">HAYIR</button>
+    </div>
+
+    <!-- MESAJ KISMI VE İÇİNDEKİ RESİM -->
+    <div id="message">
+        <img src="molang.png" id="cuteImg" alt="Tatlı Karakter">
+        Sağollll<br>Seni seviyorummm<br><h5><a id="link" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1&pp=ygUXbmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXCgBwE%3D">tıkla</a></h5>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const message = document.getElementById('message');
+        const question = document.getElementById('question');
+        const btnContainer = document.getElementById('btnContainer');
+
+        // MOBİL EKLENTİSİ: Parametre olarak (e) olayını ekledik.
+        const moveButton = (e) => {
+            if (e) e.preventDefault(); // Mobilde dokunmaya çalışırken ekranın tepki vermesini durdurur
+
+            noBtn.style.position = 'absolute';
+            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+            const randomX = Math.max(20, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(20, Math.floor(Math.random() * maxY));
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        };
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', moveButton);
+
+        yesBtn.addEventListener('click', () => {
+            btnContainer.style.display = 'none';
+            question.style.display = 'none';
+            message.style.display = 'block';
+
+            const duration = 4 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+              const timeLeft = animationEnd - Date.now();
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+              const particleCount = 50 * (timeLeft / duration);
+              
+              confetti(Object.assign({}, defaults, { 
+                  particleCount,
+                  origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+              }));
+              confetti(Object.assign({}, defaults, { 
+                  particleCount,
+                  origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+              }));
+            }, 250);
+        });
+    </script>
+</body>
+</html>
